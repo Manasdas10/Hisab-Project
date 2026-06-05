@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import GoalCard from "../components/goalcard.jsx";
 
 import {
   getTransactions,
@@ -6,9 +7,11 @@ import {
   updateTransaction,
 } from "../lib/api.js";
 
-import { showToast } from "../lib/toast.js";
+import {
+  Doughnut,
+  Bar,
+} from "react-chartjs-2";
 
-import { Doughnut, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -28,78 +31,83 @@ ChartJS.register(
   LinearScale
 );
 
-export default function Dashboard({ onAddExpense, onViewReports }) {
+function normalizeCategory(cat) {
+  if (!cat) return "Other";
+  return cat.trim();
+}
+
+export default function Dashboard({
+  onAddExpense,
+  onViewReports,
+}) {
+
   const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const [editing, setEditing] = useState(null);
 
-  const toNumber = (v) => Number(v) || 0;
+  const [openCategory, setOpenCategory] =
+    useState(null);
 
-  // FETCH
-  async function fetchTx() {
-    setLoading(true);
-    setError(null);
+  async function fetchTransactions() {
 
     try {
+
       const data = await getTransactions();
 
       setTransactions(
         data.map((t) => ({
-          _id: t._id,
-          type: t.type,
-          amount: toNumber(t.amount),
-          category: t.category,
-          notes: t.notes || "",
-          date: t.date,
+          ...t,
+          amount: Number(t.amount),
+          category: normalizeCategory(
+            t.category
+          ),
         }))
       );
-    } catch (err) {
-      setError(err.message || "Failed to load transactions");
-      setTransactions([]);
-    }
 
-    setLoading(false);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   useEffect(() => {
-    fetchTx();
+    fetchTransactions();
   }, []);
 
-  //DELETE
   async function removeTx(id) {
-    if (!confirm("Delete transaction?")) return;
 
-    try {
-      await deleteTransaction(id);
-      await fetchTx();
-      showToast("Transaction deleted");
-    } catch (err) {
-      alert(err.message || "Delete failed");
-    }
+    if (!window.confirm("Delete transaction?"))
+      return;
+
+    await deleteTransaction(id);
+
+    fetchTransactions();
   }
 
-  //SAVE EDIT
   async function saveEdit() {
-    try {
-      await updateTransaction(editing._id, editing);
-      setEditing(null);
-      await fetchTx();
-      showToast("Transaction updated");
-    } catch (err) {
-      alert(err.message || "Update failed");
-    }
+
+    await updateTransaction(
+      editing._id,
+      editing
+    );
+
+    setEditing(null);
+
+    fetchTransactions();
   }
 
-// SUMMARY CARDS
   const summary = useMemo(() => {
+
     let income = 0;
     let expense = 0;
 
     transactions.forEach((t) => {
-      if (t.type === "income") income += t.amount;
-      else expense += t.amount;
+
+      if (t.type === "income") {
+        income += t.amount;
+      } else {
+        expense += t.amount;
+      }
+
     });
 
     return {
@@ -107,248 +115,500 @@ export default function Dashboard({ onAddExpense, onViewReports }) {
       expense,
       balance: income - expense,
     };
+
   }, [transactions]);
 
-  //CATEGORY PIE
+  const grouped = useMemo(() => {
+
+    const map = {};
+
+    transactions.forEach((t) => {
+
+      if (!map[t.category]) {
+        map[t.category] = [];
+      }
+
+      map[t.category].push(t);
+
+    });
+
+    return map;
+
+  }, [transactions]);
+
   const categoryChart = useMemo(() => {
+
     const totals = {};
 
     transactions.forEach((t) => {
+
       if (t.type === "expense") {
-        totals[t.category] = (totals[t.category] || 0) + t.amount;
+
+        totals[t.category] =
+          (totals[t.category] || 0) +
+          t.amount;
+
       }
+
     });
 
     return {
+
       labels: Object.keys(totals),
+
       datasets: [
         {
           data: Object.values(totals),
+
           backgroundColor: [
-            "#4CAF50",
-            "#FF9800",
-            "#2196F3",
-            "#9C27B0",
-            "#FF5722",
+            "#22c55e",
+            "#3b82f6",
+            "#ef4444",
+            "#f59e0b",
+            "#8b5cf6",
           ],
         },
       ],
     };
+
   }, [transactions]);
 
-  // MONTHLY BAR
-  const monthlyChart = useMemo(() => {
-    const monthly = {};
+  const monthlyChart = {
 
-    transactions.forEach((t) => {
-      const month = new Date(t.date).toLocaleString("en-US", { month: "short" });
+    labels: ["This Month"],
 
-      if (!monthly[month]) monthly[month] = { income: 0, expense: 0 };
+    datasets: [
 
-      if (t.type === "income") monthly[month].income += t.amount;
-      else monthly[month].expense += t.amount;
-    });
+      {
+        label: "Income",
 
-    const labels = Object.keys(monthly);
+        data: [summary.income],
 
-    return {
-      labels,
-      datasets: [
-        {
-          label: "Income",
-          data: labels.map((m) => monthly[m].income),
-          backgroundColor: "#4CAF50",
-        },
-        {
-          label: "Expense",
-          data: labels.map((m) => monthly[m].expense),
-          backgroundColor: "#F44336",
-        },
-      ],
-    };
-  }, [transactions]);
+        backgroundColor: "#22c55e",
+      },
 
-  // UI
+      {
+        label: "Expense",
+
+        data: [summary.expense],
+
+        backgroundColor: "#ef4444",
+      },
+
+    ],
+  };
+
   return (
-    <div className="main-grid" style={{ padding: "20px" }}>
-      <h2>Dashboard</h2>
 
-      {}
-      <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-        <button className="pill" onClick={onAddExpense}>
-          Add Transaction
-        </button>
-        <button className="pill" onClick={onViewReports}>
-          Reports
-        </button>
-      </div>
+    <div className="dashboard-page">
 
-      {}
-      <div style={{ display: "flex", gap: "20px", marginBottom: "25px" }}>
-        <SummaryCard title="Total Income" value={summary.income} color="#4CAF50" />
-        <SummaryCard title="Total Expense" value={summary.expense} color="#F44336" />
-        <SummaryCard title="Balance" value={summary.balance} color="#2196F3" />
-      </div>
+      {/* TOP SUMMARY */}
 
-      {}
-      <div style={{ display: "flex", gap: "30px", flexWrap: "wrap" }}>
-        <div className="card" style={{ width: 300 }}>
-          <h3>Category Split</h3>
-          <Doughnut data={categoryChart} />
+      <div className="stats-grid">
+
+        <div className="stat-card income">
+
+          <h3>Total Income</h3>
+
+          <h1>
+            ₹{summary.income}
+          </h1>
+
         </div>
 
-        <div className="card" style={{ width: 500 }}>
-          <h3>Income vs Expense</h3>
+        <div className="stat-card expense">
+
+          <h3>Total Expense</h3>
+
+          <h1>
+            ₹{summary.expense}
+          </h1>
+
+        </div>
+
+        <div className="stat-card balance">
+
+          <h3>Balance</h3>
+
+          <h1>
+            ₹{summary.balance}
+          </h1>
+
+        </div>
+
+      </div>
+
+      {/* ACTION BUTTONS */}
+
+      <div
+        style={{
+          display: "flex",
+          gap: 12,
+          marginTop: 24,
+          marginBottom: 24,
+        }}
+      >
+
+        <button
+          className="primary-btn"
+          onClick={onAddExpense}
+        >
+          + Add Transaction
+        </button>
+
+        <button
+          className="primary-btn"
+          onClick={onViewReports}
+        >
+          View Reports
+        </button>
+
+      </div>
+
+      {/* GOAL + BUDGET */}
+
+      <div className="dashboard-grid">
+
+        <GoalCard
+          title="Monthly Expense Goal"
+          target={
+            Number(
+              localStorage.getItem(
+                "hisab_monthly_goal"
+              )
+            ) || 0
+          }
+          saved={summary.expense}
+        />
+
+        <div className="card">
+
+          <h2>Budget Insights</h2>
+
+          <br />
+
+          <p>
+            Remaining Balance:
+            <b>
+              ₹{summary.balance}
+            </b>
+          </p>
+
+          <br />
+
+          <p>
+            Total Transactions:
+            <b>
+              {transactions.length}
+            </b>
+          </p>
+
+          <br />
+
+          <p>
+            Financial Status:
+            <b>
+              {summary.balance > 0
+                ? " ✅ Healthy"
+                : " ⚠ Overspending"}
+            </b>
+          </p>
+
+        </div>
+
+      </div>
+
+      {/* CHARTS */}
+
+      <div
+        className="dashboard-grid"
+        style={{
+          marginTop: 30,
+        }}
+      >
+
+        <div className="card">
+
+          <h2>Category Split</h2>
+
+          <br />
+
+          {transactions.length === 0 ? (
+
+            <p className="empty-text">
+              No expense data
+            </p>
+
+          ) : (
+
+            <Doughnut
+              data={categoryChart}
+            />
+
+          )}
+
+        </div>
+
+        <div className="card">
+
+          <h2>Income vs Expense</h2>
+
+          <br />
+
           <Bar data={monthlyChart} />
+
         </div>
+
       </div>
 
-      {}
-      <h3 style={{ marginTop: 30 }}>Transactions</h3>
+      {/* TRANSACTIONS */}
 
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {!loading && transactions.length === 0 && <p>No transactions yet.</p>}
+      <div
+        className="card"
+        style={{
+          marginTop: 30,
+        }}
+      >
 
-      {!loading &&
-        transactions.map((t) => (
-          <div
-            key={t._id}
-            className="card"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr 1fr auto auto",
-              padding: "10px",
-              marginBottom: "10px",
-            }}
-          >
-            <span>{t.category}</span>
-            <span>{t.type}</span>
-            <span>₹{t.amount}</span>
-            <span>{new Date(t.date).toLocaleDateString()}</span>
+        <h2>Transactions</h2>
 
-            <button
-              className="pill"
-              style={{ background: "#2196F3", color: "white" }}
-              onClick={() => setEditing({ ...t })}
-            >
-              Edit
-            </button>
+        <br />
 
-            <button
-              className="pill"
-              style={{ background: "#FF4444", color: "white" }}
-              onClick={() => removeTx(t._id)}
-            >
-              Delete
-            </button>
-          </div>
-        ))}
+        {Object.keys(grouped).length === 0 ? (
+
+          <p className="empty-text">
+            No transactions added yet
+          </p>
+
+        ) : (
+
+          Object.keys(grouped).map(
+            (cat) => (
+
+              <div
+                key={cat}
+                className="transaction-group"
+              >
+
+                <div
+                  className="transaction-group-title"
+                  onClick={() =>
+                    setOpenCategory(
+                      openCategory === cat
+                        ? null
+                        : cat
+                    )
+                  }
+                >
+
+                  {cat}
+
+                  <span>
+                    {openCategory === cat
+                      ? " ▲"
+                      : " ▼"}
+                  </span>
+
+                </div>
+
+                {openCategory === cat &&
+
+                  grouped[cat].map(
+                    (t) => (
+
+                      <div
+                        key={t._id}
+                        className="transaction-item"
+                      >
+
+                        <div
+                          className="transaction-left"
+                        >
+
+                          <div
+                            className="transaction-category"
+                          >
+                            {t.type}
+                          </div>
+
+                          <div
+                            className="transaction-date"
+                          >
+                            {new Date(
+                              t.date
+                            ).toLocaleDateString()}
+                          </div>
+
+                        </div>
+
+                        <div
+                          className="transaction-amount"
+                        >
+                          ₹{t.amount}
+                        </div>
+
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: 10,
+                          }}
+                        >
+
+                          <button
+                            className="primary-btn"
+                            onClick={() =>
+                              setEditing({
+                                ...t,
+                              })
+                            }
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            style={{
+                              background:
+                                "#ef4444",
+                              color: "white",
+                            }}
+                            onClick={() =>
+                              removeTx(
+                                t._id
+                              )
+                            }
+                          >
+                            Delete
+                          </button>
+
+                        </div>
+
+                      </div>
+
+                    )
+                  )}
+
+              </div>
+
+            )
+          )
+
+        )}
+
+      </div>
+
+      {/* EDIT MODAL */}
 
       {editing && (
-        <EditModal editing={editing} setEditing={setEditing} saveEdit={saveEdit} />
-      )}
-    </div>
-  );
-}
 
-//SUMMARY CARD
-function SummaryCard({ title, value, color }) {
-  return (
-    <div
-      className="card"
-      style={{
-        flex: 1,
-        background: color,
-        color: "white",
-        fontWeight: "bold",
-        textAlign: "center",
-        padding: 20,
-        borderRadius: 14,
-      }}
-    >
-      <div>{title}</div>
-      <div style={{ fontSize: 26, marginTop: 10 }}>₹{value}</div>
-    </div>
-  );
-}
+        <div className="modal-overlay">
 
-// EDIT MODAL
-function EditModal({ editing, setEditing, saveEdit }) {
-  return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.45)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 2000,
-        backdropFilter: "blur(6px)",
-      }}
-    >
-      <div className="card" style={{ width: 360, padding: 25, borderRadius: 16 }}>
-        <h3>Edit Transaction</h3>
+          <div className="modal-card">
 
-        <label>Amount</label>
-        <input
-          type="number"
-          value={editing.amount}
-          onChange={(e) => setEditing({ ...editing, amount: Number(e.target.value) })}
-        />
+            <h2>Edit Transaction</h2>
 
-        <label style={{ marginTop: 10 }}>Type</label>
-        <select
-          value={editing.type}
-          onChange={(e) => setEditing({ ...editing, type: e.target.value })}
-        >
-          <option value="expense">Expense</option>
-          <option value="income">Income</option>
-        </select>
+            <br />
 
-        <label style={{ marginTop: 10 }}>Category</label>
-        <input
-          type="text"
-          value={editing.category}
-          onChange={(e) => setEditing({ ...editing, category: e.target.value })}
-        />
+            <input
+              type="number"
+              value={editing.amount}
+              onChange={(e) =>
+                setEditing({
+                  ...editing,
+                  amount: Number(
+                    e.target.value
+                  ),
+                })
+              }
+            />
 
-        <label style={{ marginTop: 10 }}>Notes</label>
-        <textarea
-          value={editing.notes}
-          onChange={(e) => setEditing({ ...editing, notes: e.target.value })}
-          style={{ height: 70, resize: "none" }}
-        ></textarea>
+            <br />
+            <br />
 
-        <label style={{ marginTop: 10 }}>Date</label>
-        <input
-          type="date"
-          value={editing.date.split("T")[0]}
-          onChange={(e) => setEditing({ ...editing, date: e.target.value })}
-        />
+            <select
+              value={editing.type}
+              onChange={(e) =>
+                setEditing({
+                  ...editing,
+                  type:
+                    e.target.value,
+                })
+              }
+            >
+              <option value="income">
+                Income
+              </option>
 
-        {}
-        <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-          {}
-          <button className="pill active" onClick={saveEdit}>
-            Save
-          </button>
+              <option value="expense">
+                Expense
+              </option>
+            </select>
 
-          {}
-          <button
-            className="pill"
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              color: "var(--text)",
-            }}
-            onClick={() => setEditing(null)}
-          >
-            Cancel
-          </button>
+            <br />
+            <br />
+
+            <input
+              value={editing.category}
+              onChange={(e) =>
+                setEditing({
+                  ...editing,
+                  category:
+                    e.target.value,
+                })
+              }
+            />
+
+            <br />
+            <br />
+
+            <input
+              type="date"
+              value={
+                editing.date?.split(
+                  "T"
+                )[0]
+              }
+              onChange={(e) =>
+                setEditing({
+                  ...editing,
+                  date:
+                    e.target.value,
+                })
+              }
+            />
+
+            <br />
+            <br />
+
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+              }}
+            >
+
+              <button
+                className="primary-btn"
+                onClick={saveEdit}
+              >
+                Save
+              </button>
+
+              <button
+                onClick={() =>
+                  setEditing(null)
+                }
+              >
+                Cancel
+              </button>
+
+            </div>
+
+          </div>
+
         </div>
-      </div>
+
+      )}
+
     </div>
   );
 }

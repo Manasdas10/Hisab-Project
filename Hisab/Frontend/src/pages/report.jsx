@@ -14,7 +14,7 @@ import {
   LineElement,
 } from "chart.js";
 
-import { Doughnut, Line, Bar } from "react-chartjs-2";
+import { Doughnut, Line } from "react-chartjs-2";
 import "chartjs-adapter-date-fns";
 
 ChartJS.register(
@@ -78,35 +78,28 @@ function filterByRange(tx, rangeId) {
 
 export default function Reports({ onBack }) {
   const [tx, setTx] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [range, setRange] = useState("30");
   const [error, setError] = useState(null);
 
   async function fetchTx(signal) {
-    setLoading(true);
-    setError(null);
-
     try {
       const data = await getTransactions(signal);
       const arr = Array.isArray(data) ? data : [];
 
-      const normalized = arr.map((t) => ({
-        _id: t._id || crypto.randomUUID(),
-        type: t.type || "expense",
-        amount: Number(t.amount || 0),
-        category: t.category || "Uncategorized",
-        date: t.date ? new Date(t.date).toISOString() : new Date().toISOString(),
-      }));
-
-      setTx(normalized);
+      setTx(
+        arr.map((t) => ({
+          _id: t._id || crypto.randomUUID(),
+          type: t.type || "expense",
+          amount: Number(t.amount || 0),
+          category: t.category || "Uncategorized",
+          date: t.date ? new Date(t.date).toISOString() : new Date().toISOString(),
+        }))
+      );
     } catch (err) {
-      if (err.name === "AbortError") return;
-      console.error("Failed loading transactions:", err);
-      setError(err?.message || "Failed to fetch transactions");
-      setTx([]);
+      if (err.name !== "AbortError") {
+        setError(err?.message || "Failed to fetch transactions");
+      }
     }
-
-    setLoading(false);
   }
 
   useEffect(() => {
@@ -115,13 +108,10 @@ export default function Reports({ onBack }) {
     return () => ac.abort();
   }, []);
 
-  //FILTERED DATA
   const filtered = useMemo(() => filterByRange(tx, range), [tx, range]);
-
   const expenses = filtered.filter((t) => t.type === "expense");
   const incomes = filtered.filter((t) => t.type === "income");
 
-  //CATEGORY TOTALS
   const catTotals = useMemo(() => {
     return expenses.reduce((acc, t) => {
       acc[t.category] = (acc[t.category] || 0) + t.amount;
@@ -129,7 +119,8 @@ export default function Reports({ onBack }) {
     }, {});
   }, [expenses]);
 
-  // DOUGHNUT CHART 
+  const totalSpent = expenses.reduce((s, t) => s + t.amount, 0);
+
   const doughnutData = useMemo(() => {
     const entries = Object.entries(catTotals);
     return {
@@ -151,10 +142,6 @@ export default function Reports({ onBack }) {
     };
   }, [catTotals]);
 
-  //TOTAL SPENT
-  const totalSpent = expenses.reduce((s, t) => s + t.amount, 0);
-
-  //SPENDING PATTERN CHART
   const spendingPatternChart = useMemo(() => {
     if (expenses.length === 0) return null;
 
@@ -163,22 +150,33 @@ export default function Reports({ onBack }) {
     expenses.forEach((t) => {
       const d = new Date(t.date);
       const key = new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString();
-      daily[key] = (daily[key] || 0) + t.amount;
+
+      if (!daily[key]) {
+        daily[key] = { total: 0, categories: {} };
+      }
+
+      daily[key].total += t.amount;
+      daily[key].categories[t.category] =
+        (daily[key].categories[t.category] || 0) + t.amount;
     });
 
     const points = Object.keys(daily)
-      .map((d) => ({ x: new Date(d), y: daily[d] }))
+      .map((d) => ({
+        x: new Date(d),
+        y: daily[d].total,
+        categories: daily[d].categories,
+      }))
       .sort((a, b) => a.x - b.x);
 
     return {
       datasets: [
         {
-          label: "Daily Spending Trend",
+          label: "Daily Spending",
           data: points,
           fill: true,
           tension: 0.4,
           borderColor: "#ef4444",
-          backgroundColor: "rgba(239, 68, 68, 0.15)",
+          backgroundColor: "rgba(239,68,68,0.15)",
           pointRadius: 4,
           pointHoverRadius: 6,
         },
@@ -186,11 +184,10 @@ export default function Reports({ onBack }) {
     };
   }, [expenses]);
 
-  // SPENDING INSIGHTS 
   const insights = useMemo(() => {
     if (expenses.length === 0) return ["No spending data for this period."];
 
-    let msgs = [];
+    const msgs = [];
 
     const topCategory = Object.entries(catTotals).sort((a, b) => b[1] - a[1])[0];
     if (topCategory)
@@ -208,9 +205,11 @@ export default function Reports({ onBack }) {
     msgs.push(`Average daily spending: ${fmtCurrency(totalSpent / days)}`);
 
     const totalIncome = incomes.reduce((s, t) => s + t.amount, 0);
-    if (totalIncome > totalSpent)
-      msgs.push("Income is higher than expenses — you are saving!");
-    else msgs.push("Expenses exceed income — review spending.");
+    msgs.push(
+      totalIncome > totalSpent
+        ? "Income is higher than expenses — you are saving!"
+        : "Expenses exceed income — review spending."
+    );
 
     return msgs;
   }, [expenses, incomes, catTotals, totalSpent]);
@@ -218,8 +217,6 @@ export default function Reports({ onBack }) {
   return (
     <div className="page-container" style={{ paddingTop: 18 }}>
       <div className="card" style={{ maxWidth: 980, width: "100%" }}>
-        
-        {}
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div>
             <button className="small-btn" onClick={onBack}>Back</button>
@@ -244,50 +241,85 @@ export default function Reports({ onBack }) {
           </div>
         </div>
 
-        {}
         <div style={{ marginTop: 18 }}>
           <h3>Category Split</h3>
           {Object.keys(catTotals).length === 0 ? (
             <div>No data</div>
           ) : (
             <div style={{ height: 220 }}>
-              <Doughnut data={doughnutData} />
+              <Doughnut
+                data={doughnutData}
+                options={{
+                  plugins: {
+                    tooltip: {
+                      callbacks: {
+                        label: (ctx) => {
+                          const value = ctx.parsed;
+                          const percent = ((value / totalSpent) * 100).toFixed(1);
+                          return `${ctx.label}: ₹${value} (${percent}%)`;
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
             </div>
           )}
         </div>
 
-        {}
         <div style={{ marginTop: 30 }}>
           <h3>Daily Spending Pattern</h3>
-
-          {spendingPatternChart ? (
+          {spendingPatternChart && (
             <div style={{ height: 260 }}>
               <Line
                 data={spendingPatternChart}
                 options={{
                   maintainAspectRatio: false,
                   scales: {
-                    x: { type: "time", time: { unit: "day" } },
+                    x: {
+                      type: "time",
+                      time: { unit: "day" },
+                      ticks: {
+                        callback: (value, index, ticks) => {
+                          const d = new Date(ticks[index].value);
+                          return d.toLocaleDateString("en-IN", {
+                            day: "numeric",
+                            month: "short",
+                          });
+                        },
+                      },
+                    },
                     y: {
                       beginAtZero: true,
                       ticks: { callback: (v) => `₹${v}` },
                     },
                   },
-                  plugins: { legend: { display: false } },
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      callbacks: {
+                        title: () => "",
+                        label: (ctx) => {
+                          const lines = [`Total: ₹${ctx.raw.y}`];
+                          Object.entries(ctx.raw.categories || {}).forEach(
+                            ([cat, amt]) => lines.push(`${cat}: ₹${amt}`)
+                          );
+                          return lines;
+                        },
+                      },
+                    },
+                  },
                 }}
               />
             </div>
-          ) : (
-            <p>No spending data to display trend.</p>
           )}
         </div>
 
-        {}
         <div style={{ marginTop: 30 }}>
           <h3>Spending Insights</h3>
           <ul style={{ marginTop: 10 }}>
             {insights.map((msg, i) => (
-              <li key={i} style={{ marginBottom: 6 }}>{msg}</li>
+              <li key={i}>{msg}</li>
             ))}
           </ul>
         </div>

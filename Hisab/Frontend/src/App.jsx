@@ -1,110 +1,111 @@
 import React, { useEffect, useState } from "react";
-
-import Signup from "./pages/signup.jsx";
-import Login from "./pages/login.jsx";
-import Dashboard from "./pages/dashboard.jsx";
-import AddExpense from "./pages/addexpenses.jsx";
-import Reports from "./pages/report.jsx";
-
-import ThemeToggle from "./components/themetoggle.jsx";
-
 import "./App.css";
 
-//REMOVE WRONG IMPORTS (API, authHeaders DO NOT EXIST)
-// import { API, authHeaders } from "./lib/api.js";
+import Login from "./pages/login";
+import Signup from "./pages/signup";
+import Dashboard from "./pages/dashboard";
+import AddExpense from "./pages/addexpenses";
+import Reports from "./pages/report";
 
 export default function App() {
-  const [page, setPage] = useState(localStorage.getItem("token") ? "dashboard" : "login");
-  const [isAuthed, setIsAuthed] = useState(!!localStorage.getItem("token"));
+  const [page, setPage] = useState(
+    localStorage.getItem("token") ? "dashboard" : "login"
+  );
+
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
-    function onStorage(e) {
-      if (e.key === "token") {
-        const has = !!localStorage.getItem("token");
-        setIsAuthed(has);
-        setPage(has ? "dashboard" : "login");
-      }
-    }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
-  function handleLogout() {
-    localStorage.removeItem("token");
-    setIsAuthed(false);
-    setPage("login");
-  }
-
-  function onLoggedIn() {
-    setIsAuthed(true);
-    setPage("dashboard");
-  }
-
-  function Header({ onLogout }) {
-    return (
-      <header className="header">
-        <div className="brand">
-          <div className="logo" aria-hidden>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M4 21h16V7H4v14z" stroke="white" strokeWidth="1.2" />
-              <path d="M8 3h8v4H8V3z" stroke="white" strokeWidth="1.2" />
-            </svg>
-          </div>
-
-          <div>
-            <h1 style={{ margin: 0 }}>Hisab Finance</h1>
-            <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.9)" }}>
-              Personal finance & budgeting
-            </p>
-          </div>
-        </div>
-
-        <nav>
-          {isAuthed ? (
-            <>
-              <button className="small-btn" onClick={() => setPage("dashboard")}>Dashboard</button>
-              <button className="small-btn" onClick={() => setPage("add-expense")}>Add</button>
-              <button className="small-btn" onClick={() => setPage("reports")}>Reports</button>
-
-              <ThemeToggle />
-
-              <button className="small-btn logout" onClick={onLogout}>Logout</button>
-            </>
-          ) : (
-            <>
-              <button className="small-btn" onClick={() => setPage("login")}>Login</button>
-              <button className="small-btn" onClick={() => setPage("register")}>Create account</button>
-            </>
-          )}
-        </nav>
-      </header>
+    document.documentElement.setAttribute(
+      "data-theme",
+      dark ? "dark" : "light"
     );
+  }, [dark]);
+
+  function logout() {
+    localStorage.removeItem("token");
+    setPage("login");
   }
 
   return (
     <div className="app-wrapper">
-      <Header onLogout={handleLogout} />
 
-      <main style={{ marginTop: 20 }}>
-        {page === "register" && (
-          <Signup onDone={() => setPage("login")} onSignedUp={onLoggedIn} />
+      <header className="header">
+
+        <div className="brand">
+          <div className="logo">💰</div>
+
+          <div>
+            <h1>HISAB FINANCE</h1>
+            <p>Personal finance & budgeting</p>
+          </div>
+        </div>
+
+        {localStorage.getItem("token") && (
+          <div className="header-actions">
+
+            <button
+              className={`pill ${page === "dashboard" ? "active" : ""}`}
+              onClick={() => setPage("dashboard")}
+            >
+              Dashboard
+            </button>
+
+            <button
+              className={`pill ${page === "add" ? "active" : ""}`}
+              onClick={() => setPage("add")}
+            >
+              Add
+            </button>
+
+            <button
+              className={`pill ${page === "reports" ? "active" : ""}`}
+              onClick={() => setPage("reports")}
+            >
+              Reports
+            </button>
+
+            <button
+              className="pill"
+              onClick={() => setDark(!dark)}
+            >
+              {dark ? "☀ Light" : "🌙 Dark"}
+            </button>
+
+            <button
+              className="pill"
+              onClick={logout}
+            >
+              Logout
+            </button>
+
+          </div>
         )}
+      </header>
 
-        {page === "login" && <Login onLoggedIn={onLoggedIn} />}
+      {page === "login" && (
+        <Login setPage={setPage} />
+      )}
 
-        {page === "dashboard" && (
-          <Dashboard
-            onAddExpense={() => setPage("add-expense")}
-            onViewReports={() => setPage("reports")}
-          />
-        )}
+      {page === "signup" && (
+        <Signup setPage={setPage} />
+      )}
 
-        {page === "add-expense" && (
-          <AddExpense onSaved={() => setPage("dashboard")} onCancel={() => setPage("dashboard")} />
-        )}
+      {page === "dashboard" && (
+        <Dashboard />
+      )}
 
-        {page === "reports" && <Reports onBack={() => setPage("dashboard")} />}
-      </main>
+      {page === "add" && (
+        <AddExpense
+          onSaved={() => setPage("dashboard")}
+          onCancel={() => setPage("dashboard")}
+        />
+      )}
+
+      {page === "reports" && (
+        <Reports
+          onBack={() => setPage("dashboard")}
+        />
+      )}
     </div>
   );
 }

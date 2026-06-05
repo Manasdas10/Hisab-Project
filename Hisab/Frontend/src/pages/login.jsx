@@ -1,93 +1,105 @@
 import React, { useState } from "react";
-import { showToast } from "../lib/toast.js";
 
-export default function Login({ onLoggedIn }) {
+const API = "http://localhost:5000";
+
+export default function Login({ setPage }) {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  function notify(msg) {
-    if (typeof showToast === "function") return showToast(msg);
-    return window.alert(msg);
-  }
+  const [showPassword, setShowPassword] = useState(false);
 
-  async function handleSubmit(e) {
+  async function handleLogin(e) {
     e.preventDefault();
 
-    if (!email || !password) {
-      notify("Please enter email and password.");
-      return;
-    }
-
-    setLoading(true);
-
     try {
-      const res = await fetch("http://localhost:3000/api/auth/login", {
+
+      const res = await fetch(`${API}/api/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
         body: JSON.stringify({
-          email: email.trim(),
-          password: password.trim(),
+          email,
+          password,
         }),
       });
 
-      const body = await res.json();
+      const data = await res.json();
 
-      if (!res.ok) {
-        return notify(body?.message || "Invalid credentials.");
+      if (data.token) {
+
+        localStorage.setItem("token", data.token);
+
+        setPage("dashboard");
+
+      } else {
+        alert(data.msg || "Login failed");
       }
 
-      // Extract token
-      let token = body?.token;
-      if (!token) throw new Error("Token missing from server response");
-
-      // Remove "Bearer"
-      if (token.startsWith("Bearer ")) {
-        token = token.replace("Bearer ", "");
-      }
-
-      // Save token
-      localStorage.setItem("token", token);
-
-      notify("Login successful!");
-      if (typeof onLoggedIn === "function") onLoggedIn();
     } catch (err) {
-      console.error(err);
-      notify(err.message || "Login failed.");
-    }
 
-    setLoading(false);
+      console.log(err);
+
+      alert("Backend server not running");
+
+    }
   }
 
   return (
-    <div className="page-container">
-      <div className="auth-card">
-        <h2>Login</h2>
+    <div className="auth-card">
 
-        <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, marginTop: 10 }}>
-          <input
-            className="auth-input"
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+      <h2>Login</h2>
+
+      <form onSubmit={handleLogin}>
+
+        <input
+          type="email"
+          placeholder="Enter email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+
+        <div className="password-wrapper">
 
           <input
-            className="auth-input"
-            type="password"
-            placeholder="Password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
 
-          <button className="auth-primary-btn" type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() =>
+              setShowPassword(!showPassword)
+            }
+          >
+            {showPassword ? "Hide" : "Show"}
           </button>
-        </form>
-      </div>
+
+        </div>
+
+        <button className="auth-btn">
+          Login
+        </button>
+
+      </form>
+
+      <br />
+
+      <button
+        className="pill"
+        onClick={() => setPage("signup")}
+      >
+        Create account
+      </button>
+
     </div>
   );
 }

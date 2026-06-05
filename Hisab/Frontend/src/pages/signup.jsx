@@ -1,107 +1,127 @@
 import React, { useState } from "react";
-import { showToast } from "../lib/toast.js";
 
-export default function Signup({ onDone, onSignedUp }) {
-  const [email, setEmail] = useState("");
-  const [pw, setPw] = useState("");
+const API = "http://localhost:5000";
+
+export default function Signup({ setPage }) {
+
   const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  function notify(msg) {
-    if (typeof showToast === "function") return showToast(msg);
-    return window.alert(msg);
-  }
+  const [email, setEmail] = useState("");
 
-  // Register user
-  async function submit(e) {
+  const [password, setPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  async function handleSignup(e) {
+
     e.preventDefault();
-    if (!email || !pw) {
-      notify("Please provide email and password.");
-      return;
-    }
-
-    setLoading(true);
 
     try {
-      // Send registration request
-      const res = await fetch("http://localhost:3000/api/auth/register", {
+
+      const res = await fetch(`${API}/api/auth/register`, {
+
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
         body: JSON.stringify({
-          email: email.trim(),
-          password: pw,
-          name: name.trim(),
+          name,
+          email,
+          password,
         }),
       });
 
-      const body = await res.json();
+      const data = await res.json();
 
-      if (!res.ok) {
-        notify(body?.message || "Registration failed. Try again.");
-        setLoading(false);
-        return;
+      if (data.token || data.msg) {
+
+        alert("Account created");
+
+        setPage("login");
+
+      } else {
+
+        alert(data.msg || "Signup failed");
+
       }
 
-      notify("Registration successful! Please login.");
-      if (typeof onDone === "function") onDone();
     } catch (err) {
-      console.error("Signup failed:", err);
-      notify(err?.message || "Registration failed. Try again.");
-    }
 
-    setLoading(false);
+      console.log(err);
+
+      alert("Backend server not running");
+
+    }
   }
 
   return (
-    <div className="page-container">
-      <div className="auth-card">
-        <h2>Create account</h2>
-        <p style={{ color: "#6b7280" }}>Fill in details to create a new account.</p>
+    <div className="auth-card">
 
-        <form onSubmit={submit} style={{ display: "grid", gap: 10, marginTop: 10 }}>
-          <input
-            className="auth-input"
-            placeholder="Name (optional)"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+      <h2>Create Account</h2>
+
+      <form onSubmit={handleSignup}>
+
+        <input
+          type="text"
+          placeholder="Full name"
+          value={name}
+          onChange={(e) =>
+            setName(e.target.value)
+          }
+          required
+        />
+
+        <input
+          type="email"
+          placeholder="Enter email"
+          value={email}
+          onChange={(e) =>
+            setEmail(e.target.value)
+          }
+          required
+        />
+
+        <div className="password-wrapper">
 
           <input
-            className="auth-input"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter password"
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
             required
-            type="email"
           />
 
-          <input
-            className="auth-input"
-            type="password"
-            placeholder="Password"
-            value={pw}
-            onChange={(e) => setPw(e.target.value)}
-            required
-          />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() =>
+              setShowPassword(!showPassword)
+            }
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
 
-          <div style={{ display: "flex", gap: 8 }}>
-            <button className="auth-primary-btn" type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create account"}
-            </button>
+        </div>
 
-            <button
-              type="button"
-              className="auth-secondary-btn"
-              onClick={() => {
-                if (!loading && typeof onDone === "function") onDone();
-              }}
-              disabled={loading}
-            >
-              Back to login
-            </button>
-          </div>
-        </form>
-      </div>
+        <button className="auth-btn">
+          Create Account
+        </button>
+
+      </form>
+
+      <br />
+
+      <button
+        className="pill"
+        onClick={() => setPage("login")}
+      >
+        Back to login
+      </button>
+
     </div>
   );
 }
