@@ -9,78 +9,90 @@ import Reports from "./pages/report";
 
 export default function App() {
   const [page, setPage] = useState(
-    localStorage.getItem("token") ? "dashboard" : "login"
+  localStorage.getItem("token")
+    ? "dashboard"
+    : "login"
+);
+const [dark, setDark] = useState(
+  localStorage.getItem("theme") === "dark"
+);
+  useEffect(() => {
+  document.documentElement.setAttribute(
+    "data-theme",
+    dark ? "dark" : "light"
   );
 
-  const [dark, setDark] = useState(false);
+  localStorage.setItem(
+    "theme",
+    dark ? "dark" : "light"
+  );
+}, [dark]);
 
-  useEffect(() => {
-    document.documentElement.setAttribute(
-      "data-theme",
-      dark ? "dark" : "light"
-    );
-  }, [dark]);
-
-  function logout() {
-    localStorage.removeItem("token");
-    setPage("login");
-  }
+const isLoggedIn = !!localStorage.getItem("token");
+ function logout() {
+  localStorage.removeItem("token");
+  setPage("login");
+  window.location.reload();
+}
 
   return (
-    <div className="app-wrapper">
+  <div className="app-layout">
 
-      <header className="header">
+    {isLoggedIn && (
+      <aside className="sidebar">
 
-        <div className="brand">
+        <div className="sidebar-brand">
           <div className="logo">💰</div>
 
           <div>
-            <h1>HISAB FINANCE</h1>
-            <p>Personal finance & budgeting</p>
+            <h2>Hisab</h2>
+            <p>Finance Tracker</p>
           </div>
         </div>
 
-        {localStorage.getItem("token") && (
-          <div className="header-actions">
+        <div className="sidebar-menu">
 
-            <button
-              className={`pill ${page === "dashboard" ? "active" : ""}`}
-              onClick={() => setPage("dashboard")}
-            >
-              Dashboard
-            </button>
+          <button
+            className={`sidebar-btn ${page === "dashboard" ? "active" : ""}`}
+            onClick={() => setPage("dashboard")}
+          >
+            📊 Dashboard
+          </button>
 
-            <button
-              className={`pill ${page === "add" ? "active" : ""}`}
-              onClick={() => setPage("add")}
-            >
-              Add
-            </button>
+          <button
+            className={`sidebar-btn ${page === "add" ? "active" : ""}`}
+            onClick={() => setPage("add")}
+          >
+            ➕ Add Transaction
+          </button>
 
-            <button
-              className={`pill ${page === "reports" ? "active" : ""}`}
-              onClick={() => setPage("reports")}
-            >
-              Reports
-            </button>
+          <button
+            className={`sidebar-btn ${page === "reports" ? "active" : ""}`}
+            onClick={() => setPage("reports")}
+          >
+            📈 Reports
+          </button>
 
-            <button
-              className="pill"
-              onClick={() => setDark(!dark)}
-            >
-              {dark ? "☀ Light" : "🌙 Dark"}
-            </button>
+          <button
+            className="sidebar-btn"
+            onClick={() => setDark(!dark)}
+          >
+            {dark ? "☀ Light" : "🌙 Dark"}
+          </button>
 
-            <button
-              className="pill"
-              onClick={logout}
-            >
-              Logout
-            </button>
+          <button
+            className="sidebar-btn logout"
+            onClick={logout}
+          >
+            🚪 Logout
+          </button>
 
-          </div>
-        )}
-      </header>
+        </div>
+
+      </aside>
+    )}
+
+    <main className="main-content">
 
       {page === "login" && (
         <Login setPage={setPage} />
@@ -91,7 +103,10 @@ export default function App() {
       )}
 
       {page === "dashboard" && (
-        <Dashboard />
+        <Dashboard
+          onAddExpense={() => setPage("add")}
+          onViewReports={() => setPage("reports")}
+        />
       )}
 
       {page === "add" && (
@@ -106,6 +121,9 @@ export default function App() {
           onBack={() => setPage("dashboard")}
         />
       )}
-    </div>
-  );
+
+    </main>
+
+  </div>
+);
 }

@@ -54,6 +54,8 @@ export default function Dashboard({
 
       const data = await getTransactions();
 
+      console.log(data);
+
       setTransactions(
         data.map((t) => ({
           ...t,
@@ -61,6 +63,7 @@ export default function Dashboard({
           category: normalizeCategory(
             t.category
           ),
+          notes: t.notes || "",
         }))
       );
 
@@ -199,40 +202,49 @@ export default function Dashboard({
   };
 
   return (
+    
 
     <div className="dashboard-page">
 
       {/* TOP SUMMARY */}
 
+      <div className="welcome-card">
+        <h1>Welcome Back 👋</h1>
+        <p>
+          Track expenses, manage budgets and improve savings.
+        </p>
+      </div>
+
       <div className="stats-grid">
+        <div className="stat-card income-card">
+          <div className="stat-icon">💰</div>
 
-        <div className="stat-card income">
-
-          <h3>Total Income</h3>
-
-          <h1>
-            ₹{summary.income}
-          </h1>
-
-        </div>
-
-        <div className="stat-card expense">
-
-          <h3>Total Expense</h3>
-
-          <h1>
-            ₹{summary.expense}
-          </h1>
+          <div>
+            <p>Total Income</p>
+            <h2>₹{summary.income}</h2>
+          </div>
 
         </div>
 
-        <div className="stat-card balance">
+        <div className="stat-card expense-card">
 
-          <h3>Balance</h3>
+          <div className="stat-icon">💸</div>
+          
+          <div>
+            <p>Total Expense</p>
+            <h2>₹{summary.expense}</h2>
+          </div>
 
-          <h1>
-            ₹{summary.balance}
-          </h1>
+        </div>
+
+        <div className="stat-card balance-card">
+
+          <div className="stat-icon">⚖️</div>
+
+          <div>
+            <p>Balance</p>
+            <h2>₹{summary.balance}</h2>
+          </div>
 
         </div>
 
@@ -242,28 +254,40 @@ export default function Dashboard({
 
       <div
         style={{
-          display: "flex",
-          gap: 12,
           marginTop: 24,
           marginBottom: 24,
         }}
       >
+        <div className="action-grid">
 
-        <button
-          className="primary-btn"
-          onClick={onAddExpense}
-        >
-          + Add Transaction
-        </button>
+          <div
+            className="action-card"
+            onClick={onAddExpense}
+          >
+            <div className="action-icon">➕</div>
 
-        <button
-          className="primary-btn"
-          onClick={onViewReports}
-        >
-          View Reports
-        </button>
+            <h3>Add Transaction</h3>
+
+            <p>
+              Record income and expenses
+            </p>
+          </div>
+
+          <div
+            className="action-card"
+            onClick={onViewReports}
+          >
+            <div className="action-icon">📈</div>
+
+            <h3>Reports</h3>
+
+          <p>
+            Analyze your spending
+          </p>
+        </div>
 
       </div>
+    </div>
 
       {/* GOAL + BUDGET */}
 
@@ -281,7 +305,7 @@ export default function Dashboard({
           saved={summary.expense}
         />
 
-        <div className="card">
+        <div className="card budget-card">
 
           <h2>Budget Insights</h2>
 
@@ -321,13 +345,13 @@ export default function Dashboard({
       {/* CHARTS */}
 
       <div
-        className="dashboard-grid"
+        className="charts-grid"
         style={{
-          marginTop: 30,
+          marginTop: 20,
         }}
       >
 
-        <div className="card">
+        <div className="card chart-card">
 
           <h2>Category Split</h2>
 
@@ -349,7 +373,7 @@ export default function Dashboard({
 
         </div>
 
-        <div className="card">
+        <div className="card chart-card">
 
           <h2>Income vs Expense</h2>
 
@@ -364,137 +388,123 @@ export default function Dashboard({
       {/* TRANSACTIONS */}
 
       <div
-        className="card"
-        style={{
-          marginTop: 30,
-        }}
+        className="card transaction-card"
+          style={{ marginTop: 20 }}
       >
+        <div className="section-header">
 
-        <h2>Transactions</h2>
+          <h2>Recent Transactions</h2>
 
-        <br />
+        <span className="tx-count">
+          {transactions.length} Records
+        </span>
+
+      </div>
+
+      <br />
 
         {Object.keys(grouped).length === 0 ? (
-
           <p className="empty-text">
             No transactions added yet
           </p>
-
         ) : (
+          Object.keys(grouped).map((cat) => (
+        <div
+          key={cat}
+          className="transaction-group"
+        >
+          <div
+            className="transaction-group-title"
+            onClick={() =>
+              setOpenCategory(
+                openCategory === cat
+                  ? null
+                  : cat
+              )
+            }
+          >
+            {cat}
 
-          Object.keys(grouped).map(
-            (cat) => (
+            <span>
+              {openCategory === cat
+                ? " ▲"
+                : " ▼"}
+            </span>
+          </div>
 
+          {openCategory === cat &&
+            grouped[cat].map((t) => (
               <div
-                key={cat}
-                className="transaction-group"
+                key={t._id}
+                className="transaction-item"
               >
+                <div className="transaction-left">
+                  <div className="transaction-category">
+                    <span>
+                      {t.category === "Food" && "🍔 "}
+                      {t.category === "Travel" && "✈️ "}
+                      {t.category === "Shopping" && "🛒 "}
+                      {t.category === "Bills" && "📄 "}
+                      {t.category === "Health" && "❤️ "}
+                      {t.category === "Education" && "📚 "}
+                      {t.category}
+                    </span>
+                  </div>
 
-                <div
-                  className="transaction-group-title"
-                  onClick={() =>
-                    setOpenCategory(
-                      openCategory === cat
-                        ? null
-                        : cat
-                    )
-                  }
-                >
+                  <div className="transaction-date">
+                    {new Date(
+                      t.date
+                    ).toLocaleDateString()}
 
-                  {cat}
-
-                  <span>
-                    {openCategory === cat
-                      ? " ▲"
-                      : " ▼"}
-                  </span>
-
+                    {t.notes && (
+                      <span className="note-icon">
+                        📝
+                        <div className="note-tooltip">
+                          {t.notes}
+                        </div>
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                {openCategory === cat &&
+              <div className="transaction-amount">
+                <div
+                  className={`amount-pill ${t.type}`}
+                >
+                  ₹{t.amount}
+                </div>
 
-                  grouped[cat].map(
-                    (t) => (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                  }}
+                >
+                  <button
+                    className="primary-btn"
+                    onClick={() =>
+                      setEditing({ ...t })
+                    }
+                  >
+                    ✏️ Edit
+                  </button>
 
-                      <div
-                        key={t._id}
-                        className="transaction-item"
-                      >
-
-                        <div
-                          className="transaction-left"
-                        >
-
-                          <div
-                            className="transaction-category"
-                          >
-                            {t.type}
-                          </div>
-
-                          <div
-                            className="transaction-date"
-                          >
-                            {new Date(
-                              t.date
-                            ).toLocaleDateString()}
-                          </div>
-
-                        </div>
-
-                        <div
-                          className="transaction-amount"
-                        >
-                          ₹{t.amount}
-                        </div>
-
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: 10,
-                          }}
-                        >
-
-                          <button
-                            className="primary-btn"
-                            onClick={() =>
-                              setEditing({
-                                ...t,
-                              })
-                            }
-                          >
-                            Edit
-                          </button>
-
-                          <button
-                            style={{
-                              background:
-                                "#ef4444",
-                              color: "white",
-                            }}
-                            onClick={() =>
-                              removeTx(
-                                t._id
-                              )
-                            }
-                          >
-                            Delete
-                          </button>
-
-                        </div>
-
-                      </div>
-
-                    )
-                  )}
-
+                  <button
+                    className="delete-btn"
+                    onClick={() =>
+                      removeTx(t._id)
+                    }
+                  >
+                    🗑 Delete
+                  </button>
+                </div>
               </div>
-
-            )
-          )
-
-        )}
-
+            </div>
+          ))}
       </div>
+    ))
+  )}
+</div>
 
       {/* EDIT MODAL */}
 
@@ -547,14 +557,30 @@ export default function Dashboard({
             <br />
 
             <input
+              type="text"
               value={editing.category}
               onChange={(e) =>
                 setEditing({
                   ...editing,
-                  category:
-                    e.target.value,
+                  category: e.target.value,
                 })
               }
+              placeholder="Category"
+              />
+
+            <br />
+            <br />
+
+            <textarea
+              rows="3"
+              value={editing.notes || ""}
+              onChange={(e) =>
+                setEditing({
+                  ...editing,
+                  notes:e.target.value,
+                })
+              }
+              placeholder="Notes"
             />
 
             <br />
@@ -610,5 +636,5 @@ export default function Dashboard({
       )}
 
     </div>
-  );
+  );    
 }

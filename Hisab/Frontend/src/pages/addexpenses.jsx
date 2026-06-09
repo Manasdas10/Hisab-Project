@@ -70,7 +70,7 @@ function AddExpense({ onSaved, onCancel }) {
       type,
       category,
       date,
-      note: notes.trim(),
+      notes: notes.trim(),
     };
 
     setLoading(true);
