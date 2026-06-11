@@ -17,6 +17,9 @@ try {
 }
 
 const transactionsRouter = require("./routes/transactions");
+const aiRouter = require("./routes/ai");
+const categoriesRouter = require("./routes/categories");
+const goalsRouter = require("./routes/goals");
 
 const app = express();
 
@@ -27,7 +30,7 @@ app.use(morgan("dev"));
 // Allow both Vite ports
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],
     credentials: true,
   })
 );
@@ -57,6 +60,9 @@ if (authRouter) {
 
 //Protected Transaction Routes 
 app.use("/api/transactions", authMiddleware, transactionsRouter);
+app.use("/api/ai", authMiddleware, aiRouter);
+app.use("/api/categories", authMiddleware, categoriesRouter);
+app.use("/api/goals", authMiddleware, goalsRouter);
 
 //Error Handler
 app.use((err, req, res, next) => {
