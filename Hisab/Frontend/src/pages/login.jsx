@@ -32,6 +32,9 @@ export default function Login({ setPage }) {
       if (data.token) {
 
         localStorage.setItem("token", data.token);
+        if (data.user && data.user.name) {
+          localStorage.setItem("userName", data.user.name);
+        }
 
         setPage("dashboard");
 
@@ -49,57 +52,63 @@ export default function Login({ setPage }) {
   }
 
   return (
-    <div className="auth-card">
+    <div className="auth-page-wrapper">
+      <div className="auth-card">
 
-      <h2>Login</h2>
+        <h2>Login</h2>
+        <p className="auth-subtitle font-bold text-xs" style={{ textTransform: "uppercase", letterSpacing: "1.5px" }}>
+          Welcome back to Hisab Finance
+        </p>
 
-      <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin}>
+          <div>
+            <label>Email Address</label>
+            <input
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <input
-          type="email"
-          placeholder="Enter email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+          <div>
+            <label>Password</label>
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
 
-        <div className="password-wrapper">
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() =>
+                  setShowPassword(!showPassword)
+                }
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+          </div>
 
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          <button
-            type="button"
-            className="password-toggle"
-            onClick={() =>
-              setShowPassword(!showPassword)
-            }
-          >
-            {showPassword ? "Hide" : "Show"}
+          <button className="auth-btn">
+            Login
           </button>
 
-        </div>
+        </form>
 
-        <button className="auth-btn">
-          Login
+        <button
+          className="pill"
+          onClick={() => setPage("signup")}
+        >
+          Create new account
         </button>
 
-      </form>
-
-      <br />
-
-      <button
-        className="pill"
-        onClick={() => setPage("signup")}
-      >
-        Create account
-      </button>
-
+      </div>
     </div>
   );
 }

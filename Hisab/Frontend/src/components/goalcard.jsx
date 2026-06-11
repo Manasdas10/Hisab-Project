@@ -1,76 +1,80 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Target } from "lucide-react";
 
 export default function GoalCard({ title, target, saved }) {
   const [value, setValue] = useState(target || "");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     setValue(target || "");
   }, [target]);
 
   function saveGoal() {
-    if (!value) return;
     localStorage.setItem("hisab_monthly_goal", Number(value));
+    setIsEditing(false);
     window.location.reload();
   }
 
-  const pct =
-    target > 0 ? Math.min(100, Math.round((saved / target) * 100)) : 0;
+  const pct = target > 0 ? Math.min(100, Math.round((saved / target) * 100)) : 0;
+  const remaining = Math.max(0, target - saved);
+
+  let progressColor = "green";
+  if (pct >= 85) progressColor = "red";
+  else if (pct >= 60) progressColor = "amber";
 
   return (
-    <div className="card" style={{ minWidth: 230 }}>
-      <div style={{ fontWeight: 700 }}>{title}</div>
-
-      <div style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>
-        Target
+    <div className="goal-card-modern">
+      <div className="goal-header">
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <div className="stat-icon-wrap balance" style={{ width: "36px", height: "36px", borderRadius: "10px" }}>
+            <Target size={18} />
+          </div>
+          <div className="goal-title-area">
+            <h3>{title}</h3>
+            <p>Track your target spend limit</p>
+          </div>
+        </div>
+        <button className="goal-edit-link" onClick={() => setIsEditing(!isEditing)}>
+          {isEditing ? "Cancel" : "Edit Goal"}
+        </button>
       </div>
 
-      <input
-        type="number"
-        placeholder="Set goal amount"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        style={{
-          width: "100%",
-          marginTop: 6,
-          padding: "6px 8px",
-          borderRadius: 8,
-          border: "1px solid #e5e7eb",
-        }}
-      />
+      {isEditing ? (
+        <div className="goal-input-row">
+          <input
+            type="number"
+            placeholder="Set goal amount"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+          <button onClick={saveGoal}>Save</button>
+        </div>
+      ) : (
+        <>
+          <div className="goal-amounts">
+            <span className="goal-spent">
+              ₹{saved.toLocaleString('en-IN')}
+              <span className="goal-target"> / ₹{(target || 0).toLocaleString('en-IN')}</span>
+            </span>
+          </div>
 
-      <button
-        className="pill"
-        style={{ marginTop: 8, width: "100%" }}
-        onClick={saveGoal}
-      >
-        Save Goal
-      </button>
+          <div className="goal-progress-track">
+            <div
+              className={`goal-progress-fill ${progressColor}`}
+              style={{ width: `${pct}%` }}
+            />
+          </div>
 
-      <div style={{ fontWeight: 800, marginTop: 8 }}>
-        ₹{saved}
-      </div>
-
-      <div
-        style={{
-          height: 10,
-          background: "#e5e7eb",
-          borderRadius: 8,
-          marginTop: 8,
-        }}
-      >
-        <div
-          style={{
-            width: `${pct}%`,
-            height: "100%",
-            background: "linear-gradient(90deg,#22c55e,#16a34a)",
-            borderRadius: 8,
-          }}
-        />
-      </div>
-
-      <div style={{ fontSize: 12, marginTop: 6, color: "#6b7280" }}>
-        {pct}% used
-      </div>
+          <div className="goal-footer">
+            <span className="goal-remaining" style={{ color: pct >= 85 ? "var(--danger)" : "var(--text-secondary)" }}>
+              ₹{remaining.toLocaleString('en-IN')} Remaining
+            </span>
+            <span className="goal-pct" style={{ color: pct >= 85 ? "var(--danger)" : "var(--accent)" }}>
+              {pct}%
+            </span>
+          </div>
+        </>
+      )}
     </div>
   );
 }

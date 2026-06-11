@@ -57,71 +57,80 @@ export default function Signup({ setPage }) {
   }
 
   return (
-    <div className="auth-card">
+    <div className="auth-page-wrapper">
+      <div className="auth-card">
 
-      <h2>Create Account</h2>
+        <h2>Create Account</h2>
+        <p className="auth-subtitle font-bold text-xs" style={{ textTransform: "uppercase", letterSpacing: "1.5px" }}>
+          Start Tracking with Hisab
+        </p>
 
-      <form onSubmit={handleSignup}>
+        <form onSubmit={handleSignup}>
+          <div>
+            <label>Full Name</label>
+            <input
+              type="text"
+              placeholder="Full name"
+              value={name}
+              onChange={(e) =>
+                setName(e.target.value)
+              }
+              required
+            />
+          </div>
 
-        <input
-          type="text"
-          placeholder="Full name"
-          value={name}
-          onChange={(e) =>
-            setName(e.target.value)
-          }
-          required
-        />
+          <div>
+            <label>Email Address</label>
+            <input
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
+              required
+            />
+          </div>
 
-        <input
-          type="email"
-          placeholder="Enter email"
-          value={email}
-          onChange={(e) =>
-            setEmail(e.target.value)
-          }
-          required
-        />
+          <div>
+            <label>Password</label>
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
+                required
+              />
 
-        <div className="password-wrapper">
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() =>
+                  setShowPassword(!showPassword)
+                }
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+          </div>
 
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
-            required
-          />
-
-          <button
-            type="button"
-            className="password-toggle"
-            onClick={() =>
-              setShowPassword(!showPassword)
-            }
-          >
-            {showPassword ? "Hide" : "Show"}
+          <button className="auth-btn">
+            Create Account
           </button>
 
-        </div>
+        </form>
 
-        <button className="auth-btn">
-          Create Account
+        <button
+          className="pill"
+          onClick={() => setPage("login")}
+        >
+          Back to login
         </button>
 
-      </form>
-
-      <br />
-
-      <button
-        className="pill"
-        onClick={() => setPage("login")}
-      >
-        Back to login
-      </button>
-
+      </div>
     </div>
   );
 }
