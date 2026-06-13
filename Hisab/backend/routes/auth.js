@@ -92,3 +92,14 @@ router.post('/login', async (req, res) => {
 });
 
 module.exports = router;
+router.post('/reset-password', async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash('12346789', 10);
+
+    await User.updateOne(
+      { email: 'manasd987@gmail.com' },
+      { $set: { password: hashedPassword } }
+    );
+
+    res.json({ message: 'Password reset successful' });
+  } catch (err) {
