@@ -12,7 +12,13 @@ module.exports = function (req, res, next) {
       return res.status(401).json({ message: "No token provided" });
     }
 
+    console.log("JWT_SECRET:", process.env.JWT_SECRET);
+    console.log("TOKEN:", token);
+
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      console.log("VERIFY ERROR:", err);
+      console.log("DECODED:", decoded);
+
       if (err || !decoded) {
         return res.status(401).json({ message: "Invalid token" });
       }
