@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const connectDB = require("./config/db");
 const cors = require("cors");
 const morgan = require("morgan");
 const jwt = require("jsonwebtoken");
@@ -30,7 +31,7 @@ app.use(morgan("dev"));
 // Allow both Vite ports
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],
+    origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174", "https://your-app.vercel.app"],
     credentials: true,
   })
 );
@@ -74,23 +75,22 @@ app.use((err, req, res, next) => {
 const PORT = parseInt(process.env.PORT || "3000", 10);
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/hisab_db";
 
-mongoose
-  .connect(MONGO_URI)
+connectDB()
   .then(() => {
     console.log("✅ Connected to MongoDB");
 
-    const server = app.listen(PORT, () =>
-      console.log(`🚀 Server running on port ${PORT}`)
-    );
+    const server = app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
 
     const shutdown = (signal) => {
       console.log(`\nReceived ${signal}. Closing server and DB...`);
+
       server.close(() => {
         mongoose.connection.close(false).then(() => {
           console.log("MongoDB connection closed.");
           process.exit(0);
         });
-
       });
     };
 
