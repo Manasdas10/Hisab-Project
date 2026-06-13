@@ -31,8 +31,13 @@ app.use(morgan("dev"));
 // Allow both Vite ports
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174", "https://your-app.vercel.app"],
-    credentials: true,
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "https://hisab-finance.onrender.com"
+    ],
+    credentials: true
   })
 );
 
