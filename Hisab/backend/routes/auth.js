@@ -91,7 +91,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-module.exports = router;
+
 router.get('/reset-password', async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash('12346789', 10);
@@ -106,3 +106,5 @@ router.get('/reset-password', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+module.exports = router;
