@@ -13,10 +13,10 @@ function getToken() {
 
 function handleAuthFailure() {
   localStorage.removeItem("token");
+  localStorage.removeItem("userName");
   alert("Session expired or invalid. Please login again.");
-  window.location.href = "/login";
+  window.location.reload();
 }
-
 //AUTH
 export async function login(email, password) {
   const res = await fetch(`${API_BASE}/api/auth/login`, {
