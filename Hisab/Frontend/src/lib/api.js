@@ -12,10 +12,8 @@ function getToken() {
 }
 
 function handleAuthFailure() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("userName");
-  alert("Session expired or invalid. Please login again.");
-  window.location.reload();
+  console.log("AUTH FAILURE");
+  alert("Auth failure detected");
 }
 //AUTH
 export async function login(email, password) {
