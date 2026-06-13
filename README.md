@@ -1,186 +1,256 @@
-# 💰 HISAB FINANCE TRACKER
+# 💰 Hisab Finance
 
-A modern MERN Stack Personal Finance & Expense Tracker with beautiful UI, analytics, budgeting, reports, dark mode, and responsive design.
-
----
-
-# 🚀 Features
-
-✅ User Authentication  
-✅ Login / Signup  
-✅ JWT Authentication  
-✅ Show / Hide Password  
-✅ Add Income & Expenses  
-✅ Dashboard Analytics  
-✅ Monthly Budget Goal  
-✅ Budget Planning  
-✅ Reports & Insights  
-✅ Category Charts  
-✅ Dark / Light Theme  
-✅ Responsive UI  
-✅ Modern Design  
+<p align="center">
+  <b>Track • Analyze • Save</b><br>
+  A Modern Full-Stack Personal Finance Management Platform
+</p>
 
 ---
 
-# 🛠️ Tech Stack
+## 📖 About The Project
 
-## Frontend
+Hisab Finance is a feature-rich MERN Stack Personal Finance Management Platform designed to help users take complete control of their finances. The application enables users to manage income, expenses, budgets, recurring subscriptions, savings goals, and financial reports through an intuitive and modern dashboard.
+
+The platform provides real-time financial insights, detailed analytics, spending trends, category management, recurring payment tracking, and goal-based savings monitoring. With secure authentication and responsive design, Hisab delivers a seamless finance management experience across devices.
+
+---
+
+## 🚀 Key Features
+
+### 📊 Financial Dashboard
+- Real-time financial overview
+- Total income, expenses, and balance tracking
+- Monthly budget monitoring
+- Spending insights
+- Interactive charts and analytics
+- Recent transaction summaries
+
+### 💳 Transaction Management
+- Add income and expense records
+- Categorized transaction tracking
+- Multiple payment methods
+- Notes and descriptions support
+- Edit and delete transactions
+- Search and filter transactions
+
+### 📈 Reports & Analytics
+- Category-wise spending breakdown
+- Daily spending trends
+- Monthly financial summaries
+- Period-based financial reports
+- PDF export functionality
+- Excel export functionality
+- Data sharing support
+
+### 🎯 Savings Goals
+- Create custom savings goals
+- Set target amounts and deadlines
+- Track milestone achievements
+- Visual progress indicators
+- Contribution tracking
+- Goal completion analytics
+
+### 🏷 Category Management
+- Create custom categories
+- Emoji-based category icons
+- Custom accent colors
+- Expense and income categories
+- Dynamic category management
+- System and user categories
+
+### 🔄 Recurring Payments
+- Subscription management
+- Monthly recurring transactions
+- Renewal tracking
+- Payment reminders
+- Monthly commitment analysis
+- Automatic payment logging
+
+### 🤖 Smart Financial Insights
+- Budget recommendations
+- Spending pattern analysis
+- Category-wise expense insights
+- Savings suggestions
+- Financial health indicators
+- Goal achievement tracking
+
+### ⚙ Settings & Preferences
+- User profile management
+- Theme customization
+- Notification preferences
+- Security settings
+- Password management
+- Backup and restore functionality
+
+### 🔐 Authentication & Security
+- User Registration
+- Secure Login System
+- JWT Authentication
+- Protected Routes
+- Password Encryption
+- Session Management
+
+---
+
+## 🖼 Application Screens
+
+### Dashboard
+- Financial overview
+- Income vs Expense tracking
+- Budget monitoring
+- Recent transactions
+
+### Add Transaction
+- Income & Expense creation
+- Category selection
+- Payment method tracking
+- Notes support
+
+### Financial Reports
+- Interactive charts
+- Category analysis
+- Spending trends
+- Export reports
+
+### Savings Goals
+- Goal creation
+- Progress tracking
+- Milestone monitoring
+
+### Categories Manager
+- Custom category creation
+- Color customization
+- Icon management
+
+### Recurring Payments
+- Subscription management
+- Auto-renewal tracking
+- Monthly billing overview
+
+### Settings Dashboard
+- User preferences
+- Appearance settings
+- Security controls
+- Data backups
+
+---
+
+## 🏗 System Architecture
+
+Frontend → React.js
+
+Backend → Node.js + Express.js
+
+Database → MongoDB
+
+Authentication → JWT
+
+Charts & Visualization → Chart.js / Recharts
+
+API Communication → REST APIs
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
 - React.js
-- Vite
+- React Router DOM
+- Axios
+- Chart.js
+- Recharts
 - CSS3
+- Vite
 
-## Backend
+### Backend
 - Node.js
 - Express.js
+- JWT Authentication
+- bcrypt.js
+- REST APIs
+
+### Database
 - MongoDB
 - Mongoose
-- JWT Authentication
+
+### Security
+- JWT Tokens
+- Password Hashing
+- Route Protection
 
 ---
 
-# 📂 Project Structure
+## 📂 Project Structure
 
 ```bash
 Hisab/
 │
-├── backend/
-│   ├── config/
-│   ├── middleware/
-│   ├── models/
-│   │   └── User.js
-│   ├── routes/
-│   │   └── authRoutes.js
-│   ├── .env
-│   ├── package.json
-│   └── server.js
-│
 ├── Frontend/
+│   ├── public/
 │   ├── src/
 │   │   ├── components/
 │   │   ├── pages/
-│   │   ├── lib/
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   └── main.jsx
-│   │
-│   ├── package.json
-│   └── vite.config.js
+│   │   ├── services/
+│   │   └── assets/
+│   └── package.json
 │
+├── backend/
+│   ├── models/
+│   ├── routes/
+│   ├── middleware/
+│   ├── controllers/
+│   ├── config/
+│   ├── server.js
+│   └── package.json
+│
+├── .gitignore
 └── README.md
 ```
 
 ---
 
-# ⚙️ Installation
+## ⚡ Installation & Setup
 
-## 1️⃣ Clone Repository
-
-```bash
-git clone <your-repository-link>
-```
-
----
-
-## 2️⃣ Open Project
+### 1️⃣ Clone Repository
 
 ```bash
-cd Hisab
+git clone https://github.com/Manasdas10/Hisab-Project.git
+cd Hisab-Project/Hisab
 ```
 
----
-
-# 🖥️ Backend Setup
-
-Go to backend folder:
+### 2️⃣ Backend Setup
 
 ```bash
 cd backend
-```
-
-Install dependencies:
-
-```bash
 npm install
 ```
 
-Install required packages:
-
-```bash
-npm install express mongoose cors dotenv bcryptjs jsonwebtoken nodemon
-```
-
----
-
-# 🔐 Create .env File
-
-Inside backend folder create:
-
-```bash
-.env
-```
-
-Add:
+Create a `.env` file:
 
 ```env
 MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=hisabsecret
+JWT_SECRET=your_secret_key
 PORT=3000
+FRONTEND_ORIGIN=http://localhost:5173
+```
+
+Run Backend:
+
+```bash
+npm start
 ```
 
 ---
 
-# ▶️ Run Backend
-
-```bash
-npm run dev
-```
-
-OR
-
-```bash
-node server.js
-```
-
-Expected Output:
-
-```bash
-Connected to MongoDB
-Server running on port 3000
-```
-
----
-
-# 💻 Frontend Setup
-
-Open NEW terminal.
-
-Go to frontend folder:
+### 3️⃣ Frontend Setup
 
 ```bash
 cd Frontend
-```
-
-Install dependencies:
-
-```bash
 npm install
-```
-
----
-
-# ▶️ Run Frontend
-
-```bash
 npm run dev
 ```
 
-Expected Output:
-
-```bash
-Local: http://localhost:5173/
-```
-
-Open browser:
+Application will run at:
 
 ```bash
 http://localhost:5173
@@ -188,235 +258,63 @@ http://localhost:5173
 
 ---
 
-# 🔑 Authentication Features
+## 🎯 Future Enhancements
 
-- User Signup
-- User Login
-- JWT Authentication
-- Password Hide / Show
-- Secure Password Encryption
-
----
-
-# 📊 Dashboard Features
-
-- Total Income
-- Total Expense
-- Remaining Balance
-- Monthly Goal Tracker
-- Budget Planning
-- Expense Categories
-- Doughnut Charts
-- Income vs Expense Analytics
-- Spending Insights
+- AI Finance Assistant
+- Expense Prediction using Machine Learning
+- Receipt OCR Scanner
+- Google Authentication
+- Email Reports
+- Push Notifications
+- Investment Portfolio Tracker
+- Multi-Currency Support
+- Mobile Application
+- Voice-Based Expense Entry
 
 ---
 
-# 💸 Transaction Features
+## 📊 Project Highlights
 
-- Add Expense
-- Add Income
-- Select Category
-- Add Notes
-- Select Date
-- Real-time Updates
+✔ Full Stack MERN Application
 
----
+✔ Secure JWT Authentication
 
-# 📈 Reports Features
+✔ Budget & Savings Goal Management
 
-- Daily Spending Pattern
-- Category Split
-- Transaction Summary
-- Spending Insights
-- Monthly Analysis
-- Range Filtering
+✔ Recurring Subscription Tracking
 
----
+✔ Interactive Financial Analytics
 
-# 🎨 Themes
+✔ Export Reports (PDF & Excel)
 
-## 🌞 Light Theme
-- White background
-- Purple gradient
-- Soft shadows
-- Clean UI
+✔ Modern Responsive UI
 
-## 🌙 Dark Theme
-- Black & Blue theme
-- White text
-- Dark cards
-- Blue highlights
+✔ Custom Categories & Themes
+
+✔ Backup & Restore System
+
+✔ AI-Powered Financial Insights
 
 ---
 
-# ✨ Additional Upgrades Added
+## 👨‍💻 Author
 
-✅ Dark / Light Toggle  
-✅ Doughnut Category Chart  
-✅ Budget Goal Progress  
-✅ Spending Insights  
-✅ Better UI/UX  
-✅ Responsive Layout  
-✅ Animated Hover Effects  
-✅ Improved Login Page  
-✅ Show Password Option  
-✅ Modern Dashboard Cards  
+### Manas Das
+
+Software Developer | MERN Stack Developer | AI/ML Enthusiast
+
+GitHub: https://github.com/Manasdas10
 
 ---
 
-# 📄 Important Files
+## ⭐ Support
 
-# Backend
+If you like this project, consider giving it a ⭐ on GitHub.
 
-## server.js
-Starts backend server and connects MongoDB.
-
----
-
-## authRoutes.js
-Handles:
-- Register
-- Login
-- JWT generation
+Your support motivates future improvements and new features.
 
 ---
 
-## User.js
-MongoDB schema for users.
+### 💡 Tagline
 
----
-
-# Frontend
-
-## App.jsx
-Main application routing and theme management.
-
----
-
-## login.jsx
-Login page with:
-- Show Password
-- Error handling
-- Modern UI
-
----
-
-## signup.jsx
-Registration page.
-
----
-
-## dashboard.jsx
-Main dashboard with:
-- Cards
-- Analytics
-- Charts
-- Budget tracking
-
----
-
-## addexpenses.jsx
-Add new transactions.
-
----
-
-## report.jsx
-Analytics and reports section.
-
----
-
-# 🐞 Common Errors & Fixes
-
-# 1️⃣ Server Error on Login
-
-## Cause:
-Backend not running.
-
-## Fix:
-
-Run:
-
-```bash
-cd backend
-npm run dev
-```
-
----
-
-# 2️⃣ MongoDB Connection Failed
-
-## Cause:
-Wrong MongoDB URI.
-
-## Fix:
-
-Check `.env`
-
-```env
-MONGO_URI=your_connection_string
-```
-
----
-
-# 3️⃣ Port Already In Use
-
-## Fix:
-
-Change port in `.env`
-
-```env
-PORT=5000
-```
-
----
-
-# 4️⃣ npm.ps1 Cannot Be Loaded
-
-## Fix:
-
-Run PowerShell as Administrator:
-
-```powershell
-Set-ExecutionPolicy RemoteSigned
-```
-
-Then type:
-
-```powershell
-Y
-```
-
----
-
-# 5️⃣ Frontend Not Updating
-
-## Fix:
-
-Restart Vite server:
-
-```bash
-npm run dev
-```
-
----
-
-# 📱 Future Improvements
-
-- CSV Export
-- PDF Reports
-- AI Spending Insights
-- Notifications
-- Savings Prediction
-- Mobile App
-- Voice Expense Entry
-
----
-
-# 👨‍💻 Author
-
-## Manas Das
-
-MERN Stack Developer
-
----
+**"Track Smarter. Spend Better. Save More."**
