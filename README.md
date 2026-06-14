@@ -1,4 +1,4 @@
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/7a0cc6ea-dfa3-4bab-af6e-40ddd0aa4774" /># 💰 Hisab Finance
+# 💰 Hisab Finance
 
 Hisab Finance is a full-stack personal finance management application that helps users track income, expenses, savings goals, recurring transactions, and financial insights in one place.
 
