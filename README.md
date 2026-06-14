@@ -138,59 +138,6 @@ https://hisab-project.onrender.com
 
 ---
 
-## 🗄️ Database Design
-
-### Users Collection
-
-```json
-{
-  "_id": "ObjectId",
-  "name": "Manas",
-  "email": "example@gmail.com",
-  "password": "hashed_password",
-  "createdAt": "Date",
-  "updatedAt": "Date"
-}
-```
-
-### Transactions Collection
-
-```json
-{
-  "_id": "ObjectId",
-  "userId": "ObjectId",
-  "title": "Food",
-  "amount": 250,
-  "type": "expense",
-  "category": "Food",
-  "date": "2026-06-13"
-}
-```
-
-### Categories Collection
-
-```json
-{
-  "_id": "ObjectId",
-  "userId": "ObjectId",
-  "name": "Travel"
-}
-```
-
-### Goals Collection
-
-```json
-{
-  "_id": "ObjectId",
-  "userId": "ObjectId",
-  "title": "New Laptop",
-  "targetAmount": 80000,
-  "currentAmount": 25000
-}
-```
-
----
-
 ## 🔐 Authentication Flow
 
 ```text
@@ -416,10 +363,6 @@ LinkedIn:
 https://www.linkedin.com/in/manas-das
 
 ---
-
-## 📜 License
-
-This project is intended for educational and portfolio purposes.
 
 ---
 
