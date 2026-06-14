@@ -1,248 +1,140 @@
 # 💰 Hisab Finance
 
-<p align="center">
-  <b>Track • Analyze • Save</b><br>
-  A Modern Full-Stack Personal Finance Management Platform
-</p>
+Hisab Finance is a full-stack personal finance management application that helps users track income, expenses, savings goals, recurring transactions, and financial insights in one place.
+
+## 🚀 Live Demo
+
+Frontend: https://hisab-finance.onrender.com
+
+Backend API: https://hisab-project.onrender.com
 
 ---
 
-## 📖 About The Project
+## ✨ Features
 
-Hisab Finance is a feature-rich MERN Stack Personal Finance Management Platform designed to help users take complete control of their finances. The application enables users to manage income, expenses, budgets, recurring subscriptions, savings goals, and financial reports through an intuitive and modern dashboard.
+### 🔐 Authentication
 
-The platform provides real-time financial insights, detailed analytics, spending trends, category management, recurring payment tracking, and goal-based savings monitoring. With secure authentication and responsive design, Hisab delivers a seamless finance management experience across devices.
+* User Registration
+* User Login
+* JWT-based Authentication
+* Protected Routes
 
----
+### 💵 Transaction Management
 
-## 🚀 Key Features
+* Add Income & Expenses
+* Edit Transactions
+* Delete Transactions
+* View Transaction History
 
-### 📊 Financial Dashboard
-- Real-time financial overview
-- Total income, expenses, and balance tracking
-- Monthly budget monitoring
-- Spending insights
-- Interactive charts and analytics
-- Recent transaction summaries
+### 📊 Reports & Analytics
 
-### 💳 Transaction Management
-- Add income and expense records
-- Categorized transaction tracking
-- Multiple payment methods
-- Notes and descriptions support
-- Edit and delete transactions
-- Search and filter transactions
-
-### 📈 Reports & Analytics
-- Category-wise spending breakdown
-- Daily spending trends
-- Monthly financial summaries
-- Period-based financial reports
-- PDF export functionality
-- Excel export functionality
-- Data sharing support
+* Expense Analysis
+* Income Tracking
+* Financial Overview Dashboard
+* Category-wise Spending Reports
 
 ### 🎯 Savings Goals
-- Create custom savings goals
-- Set target amounts and deadlines
-- Track milestone achievements
-- Visual progress indicators
-- Contribution tracking
-- Goal completion analytics
 
-### 🏷 Category Management
-- Create custom categories
-- Emoji-based category icons
-- Custom accent colors
-- Expense and income categories
-- Dynamic category management
-- System and user categories
+* Create Savings Goals
+* Track Progress
+* Update Goals
+* Delete Goals
 
-### 🔄 Recurring Payments
-- Subscription management
-- Monthly recurring transactions
-- Renewal tracking
-- Payment reminders
-- Monthly commitment analysis
-- Automatic payment logging
+### 📂 Category Management
 
-### 🤖 Smart Financial Insights
-- Budget recommendations
-- Spending pattern analysis
-- Category-wise expense insights
-- Savings suggestions
-- Financial health indicators
-- Goal achievement tracking
+* Custom Categories
+* Category-wise Organization
+* Category CRUD Operations
 
-### ⚙ Settings & Preferences
-- User profile management
-- Theme customization
-- Notification preferences
-- Security settings
-- Password management
-- Backup and restore functionality
+### 🔄 Recurring Transactions
 
-### 🔐 Authentication & Security
-- User Registration
-- Secure Login System
-- JWT Authentication
-- Protected Routes
-- Password Encryption
-- Session Management
+* Manage Recurring Expenses
+* Automated Financial Tracking
+
+### ⚙️ User Settings
+
+* Theme Preferences
+* Profile Management
+* Personalized Experience
+
+### 🤖 AI Finance Advisor
+
+* AI-powered financial insights
+* Budgeting recommendations
+* Expense analysis assistance
 
 ---
 
-## 🖼 Application Screens
-
-### Dashboard
-- Financial overview
-- Income vs Expense tracking
-- Budget monitoring
-- Recent transactions
-
-### Add Transaction
-- Income & Expense creation
-- Category selection
-- Payment method tracking
-- Notes support
-
-### Financial Reports
-- Interactive charts
-- Category analysis
-- Spending trends
-- Export reports
-
-### Savings Goals
-- Goal creation
-- Progress tracking
-- Milestone monitoring
-
-### Categories Manager
-- Custom category creation
-- Color customization
-- Icon management
-
-### Recurring Payments
-- Subscription management
-- Auto-renewal tracking
-- Monthly billing overview
-
-### Settings Dashboard
-- User preferences
-- Appearance settings
-- Security controls
-- Data backups
-
----
-
-## 🏗 System Architecture
-
-Frontend → React.js
-
-Backend → Node.js + Express.js
-
-Database → MongoDB
-
-Authentication → JWT
-
-Charts & Visualization → Chart.js / Recharts
-
-API Communication → REST APIs
-
----
-
-## 🛠 Tech Stack
+## 🛠️ Tech Stack
 
 ### Frontend
-- React.js
-- React Router DOM
-- Axios
-- Chart.js
-- Recharts
-- CSS3
-- Vite
+
+* React.js
+* Vite
+* CSS3
+* Lucide React Icons
 
 ### Backend
-- Node.js
-- Express.js
-- JWT Authentication
-- bcrypt.js
-- REST APIs
+
+* Node.js
+* Express.js
+* JWT Authentication
+* bcryptjs
 
 ### Database
-- MongoDB
-- Mongoose
 
-### Security
-- JWT Tokens
-- Password Hashing
-- Route Protection
+* MongoDB Atlas
+* Mongoose
+
+### Deployment
+
+* Render (Frontend)
+* Render (Backend)
+* MongoDB Atlas
 
 ---
 
-## 📂 Project Structure
+## 📁 Project Structure
 
-```bash
+```text
 Hisab/
 │
 ├── Frontend/
-│   ├── public/
 │   ├── src/
 │   │   ├── components/
 │   │   ├── pages/
-│   │   ├── services/
-│   │   └── assets/
-│   └── package.json
+│   │   ├── assets/
+│   │   └── lib/
+│   └── public/
 │
 ├── backend/
-│   ├── models/
 │   ├── routes/
 │   ├── middleware/
-│   ├── controllers/
+│   ├── models/
 │   ├── config/
-│   ├── server.js
-│   └── package.json
+│   └── server.js
 │
-├── .gitignore
 └── README.md
 ```
 
----
+## ⚡ Installation
 
-## ⚡ Installation & Setup
-
-### 1️⃣ Clone Repository
+### Clone Repository
 
 ```bash
 git clone https://github.com/Manasdas10/Hisab-Project.git
-cd Hisab-Project/Hisab
+cd Hisab-Project
 ```
 
-### 2️⃣ Backend Setup
+### Backend Setup
 
 ```bash
 cd backend
 npm install
-```
-
-Create a `.env` file:
-
-```env
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
-PORT=3000
-FRONTEND_ORIGIN=http://localhost:5173
-```
-
-Run Backend:
-
-```bash
 npm start
 ```
 
----
-
-### 3️⃣ Frontend Setup
+### Frontend Setup
 
 ```bash
 cd Frontend
@@ -250,71 +142,49 @@ npm install
 npm run dev
 ```
 
-Application will run at:
+---
 
-```bash
-http://localhost:5173
+## 🔑 Environment Variables
+
+Create a `.env` file inside the backend folder:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+PORT=3000
+```
+
+For frontend:
+
+```env
+VITE_API_URL=https://hisab-project.onrender.com
 ```
 
 ---
 
-## 🎯 Future Enhancements
+## 📸 Screenshots
 
-- AI Finance Assistant
-- Expense Prediction using Machine Learning
-- Receipt OCR Scanner
-- Google Authentication
-- Email Reports
-- Push Notifications
-- Investment Portfolio Tracker
-- Multi-Currency Support
-- Mobile Application
-- Voice-Based Expense Entry
+* Login Page
+* Dashboard
+* Reports
+* Budget Goals
+* Categories
+* Recurring Transactions
 
----
-
-## 📊 Project Highlights
-
-✔ Full Stack MERN Application
-
-✔ Secure JWT Authentication
-
-✔ Budget & Savings Goal Management
-
-✔ Recurring Subscription Tracking
-
-✔ Interactive Financial Analytics
-
-✔ Export Reports (PDF & Excel)
-
-✔ Modern Responsive UI
-
-✔ Custom Categories & Themes
-
-✔ Backup & Restore System
-
-✔ AI-Powered Financial Insights
+(Add screenshots here)
 
 ---
 
 ## 👨‍💻 Author
 
-### Manas Das
-
-Software Developer | MERN Stack Developer | AI/ML Enthusiast
+**Manas Das**
 
 GitHub: https://github.com/Manasdas10
 
----
-
-## ⭐ Support
-
-If you like this project, consider giving it a ⭐ on GitHub.
-
-Your support motivates future improvements and new features.
+LinkedIn: Add your LinkedIn profile URL here
 
 ---
 
-### 💡 Tagline
+## 📄 License
 
-**"Track Smarter. Spend Better. Save More."**
+This project is intended for educational and portfolio purposes.
