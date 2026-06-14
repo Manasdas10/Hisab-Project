@@ -419,7 +419,7 @@ https://www.linkedin.com/in/manas-das
 
 ## 📜 License
 
-This project is licensed under the MIT License.
+This project is intended for educational and portfolio purposes.
 
 ---
 
