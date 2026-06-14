@@ -105,6 +105,7 @@ export default function Reports({ onBack }) {
 
   useEffect(() => {
     const ac = new AbortController();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTx(ac.signal);
     return () => ac.abort();
   }, []);
@@ -226,7 +227,7 @@ export default function Reports({ onBack }) {
     );
 
     return msgs;
-  }, [expenses, incomes, catTotals, totalSpent, totalIncome]);
+  }, [expenses, catTotals, totalSpent, totalIncome]);
 
   // helper renderer for markdown-like text
   const renderInsightText = (text) => {

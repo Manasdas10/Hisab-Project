@@ -13,7 +13,10 @@ function getToken() {
 
 function handleAuthFailure() {
   console.log("AUTH FAILURE");
-  alert("Auth failure detected");
+  localStorage.removeItem("token");
+  localStorage.removeItem("userName");
+  window.location.reload();
+  throw new Error("Unauthorized");
 }
 //AUTH
 export async function login(email, password) {

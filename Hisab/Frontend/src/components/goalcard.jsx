@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Target } from "lucide-react";
 
 export default function GoalCard({ title, target, saved }) {
   const [value, setValue] = useState(target || "");
   const [isEditing, setIsEditing] = useState(false);
+  const [prevTarget, setPrevTarget] = useState(target);
 
-  useEffect(() => {
+  if (target !== prevTarget) {
+    setPrevTarget(target);
     setValue(target || "");
-  }, [target]);
+  }
 
   function saveGoal() {
     localStorage.setItem("hisab_monthly_goal", Number(value));

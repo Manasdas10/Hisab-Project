@@ -89,7 +89,7 @@ export default function ChatWidget() {
       const isBullet = line.trim().startsWith("•") || line.trim().startsWith("-");
       let cleanLine = line;
       if (isBullet) {
-        cleanLine = line.replace(/^[•\-]\s*/, "");
+        cleanLine = line.replace(/^[•-]\s*/, "");
       }
       
       // Handle bold formatting (**text**)

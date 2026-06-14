@@ -37,12 +37,12 @@ export default function BudgetGoalPanel({ onBack }) {
   const [title, setTitle] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
   const [deadline, setDeadline] = useState("");
-  const [milestones, setMilestones] = useState([
+  const milestones = useMemo(() => [
     { title: "25% Saved", percentage: 25 },
     { title: "50% Saved", percentage: 50 },
     { title: "75% Saved", percentage: 75 },
     { title: "100% Fully Funded", percentage: 100 }
-  ]);
+  ], []);
   
   // Edit goal states
   const [editTitle, setEditTitle] = useState("");

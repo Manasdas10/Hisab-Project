@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { createTransaction, getCategories, getTransactions, createCategory } from "../lib/api.js";
 import { showToast } from "../lib/toast.js";
 import { Doughnut } from "react-chartjs-2";
@@ -31,26 +31,24 @@ function AddExpense({ onSaved, onCancel }) {
 
   const acRef = useRef(null);
 
-  async function loadCats() {
+  const loadCats = useCallback(async () => {
     try {
       const data = await getCategories();
       setCategories(data);
-      if (data.length > 0 && !category) {
-        setCategory(data[0].name);
-      }
+      setCategory(prev => prev || (data.length > 0 ? data[0].name : ""));
     } catch (err) {
       console.log(err);
     }
-  }
+  }, []);
 
-  async function loadTransactions() {
+  const loadTransactions = useCallback(async () => {
     try {
       const data = await getTransactions();
       setTransactions(data.map(t => ({ ...t, amount: Number(t.amount) })));
     } catch (err) {
       console.log(err);
     }
-  }
+  }, []);
 
   useEffect(() => {
     loadCats();
@@ -61,7 +59,7 @@ function AddExpense({ onSaved, onCancel }) {
         acRef.current.abort();
       }
     };
-  }, []);
+  }, [loadCats, loadTransactions]);
 
   function showMessage(msg) {
     if (typeof showToast === "function") {
